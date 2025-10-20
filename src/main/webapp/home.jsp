@@ -110,6 +110,7 @@
         .secondary-news-card {
             border: none;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
         }
         .secondary-news-card img {
             height: 150px;
@@ -120,6 +121,15 @@
             line-height: 1.4;
             font-weight: 600;
             min-height: 45px;
+        }
+        .secondary-news-card h5 a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+        }
+        .secondary-news-card h5 a:hover {
+            color: #007bff;
+            text-decoration: none;
         }
         @media (max-width: 768px) {
             .main-featured-news {
@@ -323,7 +333,7 @@
                             <i class="far fa-user"></i> <%= featuredNews.getAuthorName() %>
                         </div>
                         <p class="text-muted"><%= featuredNews.getSummary() %></p>
-                        <a href="#" class="btn btn-primary btn-sm">Đọc tiếp</a>
+                        <a href="<%= request.getContextPath() %>/news/detail?id=<%= featuredNews.getId() %>" class="btn btn-primary btn-sm">Đọc tiếp</a>
                     </div>
                 </div>
                 <% } %>
@@ -337,7 +347,7 @@
                         for (int i = 1; i < Math.min(allNews.size(), 7); i++) {
                             NewsEntity news = allNews.get(i);
                     %>
-                    <div class="card secondary-news-card">
+                    <div class="card secondary-news-card" onclick="window.location.href='<%= request.getContextPath() %>/news/detail?id=<%= news.getId() %>'">
                         <% if (news.getImage() != null && !news.getImage().isEmpty()) { %>
                             <img src="<%= news.getImage() %>" class="card-img-top" alt="<%= news.getTitle() %>">
                         <% } else { %>
@@ -345,7 +355,11 @@
                         <% } %>
                         <div class="card-body p-3">
                             <span class="badge badge-info mb-2"><%= news.getCategoryName() %></span>
-                            <h5 class="card-title"><a href="#"><%= news.getTitle() %></a></h5>
+                            <h5 class="card-title">
+                                <a href="<%= request.getContextPath() %>/news/detail?id=<%= news.getId() %>">
+                                    <%= news.getTitle() %>
+                                </a>
+                            </h5>
                             <div class="news-meta">
                                 <i class="far fa-clock"></i> <%= news.getCreateDate() %>
                             </div>
@@ -370,7 +384,7 @@
                         NewsEntity news = allNews.get(i);
                     %>
                     <div class="col-md-6 mb-4">
-                        <div class="card secondary-news-card h-100">
+                        <div class="card secondary-news-card h-100" onclick="window.location.href='<%= request.getContextPath() %>/news/detail?id=<%= news.getId() %>'">
                             <% if (news.getImage() != null && !news.getImage().isEmpty()) { %>
                                 <img src="<%= news.getImage() %>" class="card-img-top" alt="<%= news.getTitle() %>">
                             <% } else { %>
@@ -378,7 +392,11 @@
                             <% } %>
                             <div class="card-body p-3">
                                 <span class="badge badge-secondary mb-2"><%= news.getCategoryName() %></span>
-                                <h5 class="card-title"><a href="#"><%= news.getTitle() %></a></h5>
+                                <h5 class="card-title">
+                                    <a href="<%= request.getContextPath() %>/news/detail?id=<%= news.getId() %>">
+                                        <%= news.getTitle() %>
+                                    </a>
+                                </h5>
                                 <div class="news-meta">
                                     <i class="far fa-clock"></i> <%= news.getCreateDate() %>
                                 </div>
@@ -402,7 +420,11 @@
                         NewsEntity sidebarNews = allNews.get(i);
                 %>
                 <div class="sidebar-news-item">
-                    <h6><a href="#"><%= sidebarNews.getTitle() %></a></h6>
+                    <h6>
+                        <a href="<%= request.getContextPath() %>/news/detail?id=<%= sidebarNews.getId() %>">
+                            <%= sidebarNews.getTitle() %>
+                        </a>
+                    </h6>
                     <div class="meta">
                         <i class="far fa-clock"></i> <%= sidebarNews.getCreateDate() %> | 
                         <i class="fas fa-eye"></i> <%= sidebarNews.getViewCount() %> lượt xem
@@ -433,7 +455,11 @@
                         NewsEntity popularNews = allNews.get(i);
                 %>
                 <div class="sidebar-news-item">
-                    <h6><a href="#"><%= popularNews.getTitle() %></a></h6>
+                    <h6>
+                        <a href="<%= request.getContextPath() %>/news/detail?id=<%= popularNews.getId() %>">
+                            <%= popularNews.getTitle() %>
+                        </a>
+                    </h6>
                     <div class="meta">
                         <i class="far fa-clock"></i> <%= popularNews.getCreateDate() %> | 
                         <%= popularNews.getViewCount() %> lượt xem

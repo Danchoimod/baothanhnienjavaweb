@@ -209,4 +209,60 @@ public class NewsServices {
 		}
 		return newsList;
 	}
+	
+	// Tăng số lượt xem tin tức
+	public boolean incrementViewCount(int newsId) {
+		String sql = "UPDATE News SET viewCount = viewCount + 1 WHERE id = ?";
+		
+		try (Connection con = DatabaseConnect.dbConnection();
+			 PreparedStatement ps = con.prepareStatement(sql)) {
+			
+			ps.setInt(1, newsId);
+			int result = ps.executeUpdate();
+			return result > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	// Lấy tin tức liên quan (cùng danh mục, khác ID)
+	public List<NewsEntity> getRelatedNews(int newsId, int categoryId, int limit) {
+		List<NewsEntity> newsList = new ArrayList<>();
+		String sql = "SELECT TOP " + limit + " n.*, c.name as categoryName, u.fullname as authorName " +
+					 "FROM News n " +
+					 "INNER JOIN Category c ON n.categoryId = c.id " +
+					 "INNER JOIN Users u ON n.userId = u.id " +
+					 "WHERE n.isActive = 1 AND n.categoryId = ? AND n.id != ? " +
+					 "ORDER BY n.viewCount DESC, n.createDate DESC";
+		
+		try (Connection con = DatabaseConnect.dbConnection();
+			 PreparedStatement ps = con.prepareStatement(sql)) {
+			
+			ps.setInt(1, categoryId);
+			ps.setInt(2, newsId);
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				NewsEntity news = new NewsEntity();
+				news.setId(rs.getInt("id"));
+				news.setTitle(rs.getString("title"));
+				news.setContent(rs.getString("content"));
+				news.setSummary(rs.getString("summary"));
+				news.setImage(rs.getString("image"));
+				news.setCreateDate(rs.getDate("createDate"));
+				news.setUpdateDate(rs.getDate("updateDate"));
+				news.setUserId(rs.getInt("userId"));
+				news.setAuthorName(rs.getString("authorName"));
+				news.setCategoryId(rs.getInt("categoryId"));
+				news.setCategoryName(rs.getString("categoryName"));
+				news.setViewCount(rs.getInt("viewCount"));
+				news.setActive(rs.getBoolean("isActive"));
+				newsList.add(news);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return newsList;
+	}
 }

@@ -16,7 +16,7 @@ import com.poly.entities.NewsEntity;
 import com.poly.entities.Users;
 import com.poly.services.NewsServices;
 
-@WebServlet({"/news/create", "/news/edit", "/news/list", "/news/delete"})
+@WebServlet({"/news/create", "/news/edit", "/news/list", "/news/delete", "/news/detail"})
 public class NewsController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private NewsServices newsServices = new NewsServices();
@@ -24,6 +24,14 @@ public class NewsController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		String path = req.getServletPath();
+		
+		// Trang chi tiết không cần đăng nhập
+		if (path.equals("/news/detail")) {
+			showNewsDetail(req, resp);
+			return;
+		}
+		
 		HttpSession session = req.getSession(false);
 		
 		// Kiểm tra đăng nhập
@@ -40,8 +48,6 @@ public class NewsController extends HttpServlet {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập trang này!");
 			return;
 		}
-		
-		String path = req.getServletPath();
 		
 		if (path.equals("/news/create")) {
 			showCreatePage(req, resp);
@@ -238,5 +244,37 @@ public class NewsController extends HttpServlet {
 			newsServices.deleteNews(newsId);
 		}
 		resp.sendRedirect(req.getContextPath() + "/news/list?success=delete");
+	}
+	
+	private void showNewsDetail(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		String newsIdParam = req.getParameter("id");
+		if (newsIdParam == null || newsIdParam.isEmpty()) {
+			resp.sendRedirect(req.getContextPath() + "/home");
+			return;
+		}
+		
+		try {
+			int newsId = Integer.parseInt(newsIdParam);
+			
+			// Lấy tin tức
+			NewsEntity news = newsServices.getNewsById(newsId);
+			if (news == null || !news.isActive()) {
+				resp.sendRedirect(req.getContextPath() + "/home");
+				return;
+			}
+			
+			// Tăng lượt xem
+			newsServices.incrementViewCount(newsId);
+			
+			// Lấy tin liên quan
+			List<NewsEntity> relatedNews = newsServices.getRelatedNews(newsId, news.getCategoryId(), 5);
+			
+			req.setAttribute("news", news);
+			req.setAttribute("relatedNews", relatedNews);
+			req.getRequestDispatcher("/news-detail.jsp").forward(req, resp);
+		} catch (NumberFormatException e) {
+			resp.sendRedirect(req.getContextPath() + "/home");
+		}
 	}
 }
