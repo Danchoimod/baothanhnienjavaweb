@@ -168,6 +168,16 @@
             font-weight: bold;
             color: #007bff !important;
         }
+        
+        /* News Management Cards Hover Effect */
+        .news-management-card {
+            transition: all 0.3s ease;
+        }
+        
+        .news-management-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,.2) !important;
+        }
     </style>
 </head>
 <body>
@@ -213,16 +223,16 @@
                                 <i class="fas fa-lock"></i> Đổi mật khẩu
                             </a>
                         </li>
+                        <% 
+                        String userRole = (String) session.getAttribute("role");
+                        if ("EDITOR".equals(userRole) || "ADMIN".equals(userRole)) { 
+                        %>
                         <li>
-                            <a href="#" data-tab="activity">
-                                <i class="fas fa-history"></i> Hoạt động bình luận
+                            <a href="#" data-tab="news-management">
+                                <i class="fas fa-newspaper"></i> Quản lý tin tức
                             </a>
                         </li>
-                        <li>
-                            <a href="#" data-tab="saved">
-                                <i class="fas fa-bookmark"></i> Tin đã lưu
-                            </a>
-                        </li>
+                        <% } %>
                         <li>
                             <a href="logout" class="text-danger">
                                 <i class="fas fa-sign-out-alt"></i> Đăng xuất
@@ -376,17 +386,48 @@
                             </form>
                         </div>
 
-                        <!-- Activity Tab -->
-                        <div id="activityTab" class="tab-panel <%= "activity".equals(request.getAttribute("activeTab")) ? "" : "d-none" %>">
-                            <h3 class="section-title">Hoạt động bình luận</h3>
-                            <p class="text-muted">Chức năng đang được phát triển...</p>
+                        <!-- News Management Tab (for EDITOR/ADMIN only) -->
+                        <% if ("EDITOR".equals(userRole) || "ADMIN".equals(userRole)) { %>
+                        <div id="news-managementTab" class="tab-panel <%= "news-management".equals(request.getAttribute("activeTab")) ? "" : "d-none" %>">
+                            <h3 class="section-title">Quản lý tin tức</h3>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4 mb-3">
+                                    <a href="<%= request.getContextPath() %>/news/create" class="card news-management-card text-center p-4 text-decoration-none" style="border: 2px solid #007bff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1);">
+                                        <i class="fas fa-plus-circle" style="font-size: 48px; color: #007bff; margin-bottom: 15px;"></i>
+                                        <h5 style="color: #007bff; margin: 0;">Đăng tin mới</h5>
+                                        <p class="text-muted mt-2 mb-0" style="font-size: 14px;">Tạo bài viết tin tức mới</p>
+                                    </a>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <a href="<%= request.getContextPath() %>/news/list" class="card news-management-card text-center p-4 text-decoration-none" style="border: 2px solid #28a745; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1);">
+                                        <i class="fas fa-list" style="font-size: 48px; color: #28a745; margin-bottom: 15px;"></i>
+                                        <h5 style="color: #28a745; margin: 0;">Danh sách tin</h5>
+                                        <p class="text-muted mt-2 mb-0" style="font-size: 14px;">Xem và quản lý tin của bạn</p>
+                                    </a>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <a href="<%= request.getContextPath() %>/home" class="card news-management-card text-center p-4 text-decoration-none" style="border: 2px solid #17a2b8; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1);">
+                                        <i class="fas fa-chart-line" style="font-size: 48px; color: #17a2b8; margin-bottom: 15px;"></i>
+                                        <h5 style="color: #17a2b8; margin: 0;">Xem tin công khai</h5>
+                                        <p class="text-muted mt-2 mb-0" style="font-size: 14px;">Xem tin tức trên trang chủ</p>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> 
+                                <strong>Hướng dẫn:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Nhấn <strong>"Đăng tin mới"</strong> để tạo bài viết tin tức với tiêu đề, nội dung, hình ảnh</li>
+                                    <li>Nhấn <strong>"Danh sách tin"</strong> để xem, chỉnh sửa hoặc xóa các tin đã đăng</li>
+                                    <li>Hình ảnh sẽ được tải lên Cloudinary tự động khi bạn chọn file</li>
+                                </ul>
+                            </div>
                         </div>
-
-                        <!-- Saved Tab -->
-                        <div id="savedTab" class="tab-panel <%= "saved".equals(request.getAttribute("activeTab")) ? "" : "d-none" %>">
-                            <h3 class="section-title">Tin đã lưu</h3>
-                            <p class="text-muted">Chức năng đang được phát triển...</p>
-                        </div>
+                        <% } %>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.poly.entities.NewsEntity" %>
 <%@taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jstl/fmt_rt" prefix="fmt" %>
+<%
+    NewsEntity featuredNews = (NewsEntity) request.getAttribute("featuredNews");
+    List<NewsEntity> allNews = (List<NewsEntity>) request.getAttribute("allNews");
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -238,7 +244,9 @@
                     <i class="fas fa-newspaper"></i> DẶT BÁO
                 </a>
                 
-                <% if (session.getAttribute("user") != null) { %>
+                <% if (session.getAttribute("user") != null) { 
+                    String role = (String) session.getAttribute("role");
+                %>
                     <!-- User logged in -->
                     <div class="dropdown d-inline-block">
                         <a href="profile" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown">
@@ -246,6 +254,9 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item" href="profile"><i class="fas fa-user-circle"></i> Tài khoản</a>
+                            <% if ("EDITOR".equals(role) || "ADMIN".equals(role)) { %>
+                            <a class="dropdown-item" href="news/list"><i class="fas fa-newspaper"></i> Quản lý tin tức</a>
+                            <% } %>
                             <a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Cài đặt</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
@@ -289,92 +300,94 @@
         <div class="row">
             <div class="col-lg-8">
                 <!-- Breaking News -->
+                <% if (featuredNews != null) { %>
                 <div class="breaking-news">
-                    <div class="breaking-news-label">🔴 TIN NÓNG</div>
-                    <h5 class="mb-0">Cử tri lo ngại trước biến động giá vàng, bất động sản</h5>
+                    <div class="breaking-news-label">🔴 TIN NỔI BẬT</div>
+                    <h5 class="mb-0"><%= featuredNews.getTitle() %></h5>
                     <div class="news-meta mt-2">
-                        <i class="far fa-clock"></i> 2 giờ trước
+                        <i class="far fa-clock"></i> <%= featuredNews.getCreateDate() %>
                     </div>
                 </div>
 
                 <!-- Main Featured News -->
                 <div class="main-featured-news">
-                    <img src="https://via.placeholder.com/600x300?text=Tin+nổi+bật" alt="Featured">
+                    <% if (featuredNews.getImage() != null && !featuredNews.getImage().isEmpty()) { %>
+                        <img src="<%= featuredNews.getImage() %>" alt="<%= featuredNews.getTitle() %>">
+                    <% } else { %>
+                        <img src="https://via.placeholder.com/600x300?text=Tin+nổi+bật" alt="Featured">
+                    <% } %>
                     <div class="main-featured-content">
-                        <h2>Cử tri lo ngại trước biến động giá vàng, bất động sản</h2>
+                        <h2><%= featuredNews.getTitle() %></h2>
                         <div class="news-meta">
-                            <i class="far fa-calendar"></i> Thứ Hai, 20/10/2025 | 
-                            <i class="far fa-user"></i> Báo Thanh Niên
+                            <i class="far fa-calendar"></i> <%= featuredNews.getCreateDate() %> | 
+                            <i class="far fa-user"></i> <%= featuredNews.getAuthorName() %>
                         </div>
-                        <p class="text-muted">Cử tri và nhân dân lo ngại về tác động của làm phát toàn cầu, cùng với sự biến động khó lường của giá vàng và bất động sản, những vấn đề được bàn tán sôi nổi trong cộng đồng.</p>
+                        <p class="text-muted"><%= featuredNews.getSummary() %></p>
                         <a href="#" class="btn btn-primary btn-sm">Đọc tiếp</a>
                     </div>
                 </div>
+                <% } %>
 
                 <!-- Secondary News Grid -->
                 <h5 class="mb-4">Tin khác</h5>
                 <div class="secondary-news-grid">
+                    <% 
+                    if (allNews != null && allNews.size() > 1) {
+                        // Bỏ qua tin đầu tiên (đã hiển thị ở featured)
+                        for (int i = 1; i < Math.min(allNews.size(), 7); i++) {
+                            NewsEntity news = allNews.get(i);
+                    %>
                     <div class="card secondary-news-card">
-                        <img src="https://via.placeholder.com/400x150?text=Tin+1" class="card-img-top">
+                        <% if (news.getImage() != null && !news.getImage().isEmpty()) { %>
+                            <img src="<%= news.getImage() %>" class="card-img-top" alt="<%= news.getTitle() %>">
+                        <% } else { %>
+                            <img src="https://via.placeholder.com/400x150?text=<%= news.getCategoryName() %>" class="card-img-top">
+                        <% } %>
                         <div class="card-body p-3">
-                            <span class="badge badge-info mb-2">CHÍNH TRỊ</span>
-                            <h5 class="card-title"><a href="#">Hợp tác quốc phòng Việt Nam – Belarus còn dư địa phát triển</a></h5>
+                            <span class="badge badge-info mb-2"><%= news.getCategoryName() %></span>
+                            <h5 class="card-title"><a href="#"><%= news.getTitle() %></a></h5>
                             <div class="news-meta">
-                                <i class="far fa-clock"></i> 1 giờ trước
+                                <i class="far fa-clock"></i> <%= news.getCreateDate() %>
                             </div>
                         </div>
                     </div>
-
-                    <div class="card secondary-news-card">
-                        <img src="https://via.placeholder.com/400x150?text=Tin+2" class="card-img-top">
-                        <div class="card-body p-3">
-                            <span class="badge badge-success mb-2">KINH TẾ</span>
-                            <h5 class="card-title"><a href="#">Đề nghị doanh nghiệp hoạt động ở nơi nào thì nộp thuế tại nơi đó</a></h5>
-                            <div class="news-meta">
-                                <i class="far fa-clock"></i> 3 giờ trước
-                            </div>
-                        </div>
+                    <% 
+                        }
+                    } else {
+                    %>
+                    <!-- Placeholder nếu không có tin -->
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-newspaper" style="font-size: 64px; color: #ddd;"></i>
+                        <p class="text-muted mt-3">Chưa có tin tức nào được đăng</p>
                     </div>
-
-                    <div class="card secondary-news-card">
-                        <img src="https://via.placeholder.com/400x150?text=Tin+3" class="card-img-top">
-                        <div class="card-body p-3">
-                            <span class="badge badge-warning mb-2">XÃ HỘI</span>
-                            <h5 class="card-title"><a href="#">Đề xuất chi thụ nhập thêm cho hơn 1.500 viên chức Bảo hiểm xã hội TP.HCM</a></h5>
-                            <div class="news-meta">
-                                <i class="far fa-clock"></i> 4 giờ trước
-                            </div>
-                        </div>
-                    </div>
+                    <% } %>
                 </div>
 
                 <!-- More News -->
+                <% if (allNews != null && allNews.size() > 7) { %>
                 <div class="row">
+                    <% for (int i = 7; i < Math.min(allNews.size(), 9); i++) {
+                        NewsEntity news = allNews.get(i);
+                    %>
                     <div class="col-md-6 mb-4">
                         <div class="card secondary-news-card h-100">
-                            <img src="https://via.placeholder.com/400x150?text=Tin+4" class="card-img-top">
+                            <% if (news.getImage() != null && !news.getImage().isEmpty()) { %>
+                                <img src="<%= news.getImage() %>" class="card-img-top" alt="<%= news.getTitle() %>">
+                            <% } else { %>
+                                <img src="https://via.placeholder.com/400x150?text=<%= news.getCategoryName() %>" class="card-img-top">
+                            <% } %>
                             <div class="card-body p-3">
-                                <span class="badge badge-secondary mb-2">THỜI SỰ</span>
-                                <h5 class="card-title"><a href="#">Sự kiện chính trị tuần qua</a></h5>
+                                <span class="badge badge-secondary mb-2"><%= news.getCategoryName() %></span>
+                                <h5 class="card-title"><a href="#"><%= news.getTitle() %></a></h5>
                                 <div class="news-meta">
-                                    <i class="far fa-clock"></i> 5 giờ trước
+                                    <i class="far fa-clock"></i> <%= news.getCreateDate() %>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="card secondary-news-card h-100">
-                            <img src="https://via.placeholder.com/400x150?text=Tin+5" class="card-img-top">
-                            <div class="card-body p-3">
-                                <span class="badge badge-danger mb-2">GIÁO DỤC</span>
-                                <h5 class="card-title"><a href="#">Xu hướng giáo dục mới trong năm học 2025-2026</a></h5>
-                                <div class="news-meta">
-                                    <i class="far fa-clock"></i> 6 giờ trước
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <% } %>
                 </div>
+                <% } %>
             </div>
 
             <!-- Sidebar -->
@@ -383,22 +396,26 @@
                 <div class="sidebar-section-title">
                     <i class="fas fa-star"></i> Tin mới
                 </div>
+                <% 
+                if (allNews != null && !allNews.isEmpty()) {
+                    for (int i = 0; i < Math.min(allNews.size(), 5); i++) {
+                        NewsEntity sidebarNews = allNews.get(i);
+                %>
                 <div class="sidebar-news-item">
-                    <h6><a href="#">Sự lún nghiêm trọng gần thủy điện Lạ Ly, 6 hộ dân trong vùng nguy hiểm</a></h6>
-                    <div class="meta"><i class="far fa-clock"></i> 1 giờ trước</div>
+                    <h6><a href="#"><%= sidebarNews.getTitle() %></a></h6>
+                    <div class="meta">
+                        <i class="far fa-clock"></i> <%= sidebarNews.getCreateDate() %> | 
+                        <i class="fas fa-eye"></i> <%= sidebarNews.getViewCount() %> lượt xem
+                    </div>
                 </div>
-                <div class="sidebar-news-item">
-                    <h6><a href="#">Bán hòa ca của lúa và dã thường</a></h6>
-                    <div class="meta"><i class="far fa-clock"></i> 2 giờ trước</div>
+                <% 
+                    }
+                } else {
+                %>
+                <div class="text-center text-muted py-3">
+                    <p>Chưa có tin tức mới</p>
                 </div>
-                <div class="sidebar-news-item">
-                    <h6><a href="#">Mỗi tháng 10 dương lịch, đã rục rich làm đẹp... đón tết</a></h6>
-                    <div class="meta"><i class="far fa-clock"></i> 3 giờ trước</div>
-                </div>
-                <div class="sidebar-news-item">
-                    <h6><a href="#">Trung Kiên không thể cứu nối HAGL, cửa rơi hang đang đến gần</a></h6>
-                    <div class="meta"><i class="far fa-clock"></i> 4 giờ trước</div>
-                </div>
+                <% } %>
 
                 <!-- Quảng cáo -->
                 <div class="mt-4">
@@ -409,18 +426,23 @@
                 <div class="sidebar-section-title mt-4">
                     <i class="fas fa-fire"></i> Xem nhiều
                 </div>
+                <% 
+                if (allNews != null && !allNews.isEmpty()) {
+                    // Sắp xếp theo viewCount (giả lập - trong thực tế cần sort trong database)
+                    for (int i = 0; i < Math.min(allNews.size(), 3); i++) {
+                        NewsEntity popularNews = allNews.get(i);
+                %>
                 <div class="sidebar-news-item">
-                    <h6><a href="#">Lịch sử tương tác giữa nước ngoài và Việt Nam trong các năm qua</a></h6>
-                    <div class="meta"><i class="far fa-clock"></i> 8 giờ trước | 5.2K xem</div>
+                    <h6><a href="#"><%= popularNews.getTitle() %></a></h6>
+                    <div class="meta">
+                        <i class="far fa-clock"></i> <%= popularNews.getCreateDate() %> | 
+                        <%= popularNews.getViewCount() %> lượt xem
+                    </div>
                 </div>
-                <div class="sidebar-news-item">
-                    <h6><a href="#">Các chính sách mới của Chính phủ tháng 10</a></h6>
-                    <div class="meta"><i class="far fa-clock"></i> 10 giờ trước | 3.8K xem</div>
-                </div>
-                <div class="sidebar-news-item">
-                    <h6><a href="#">Khuyến cáo an toàn giao thông dịp cuối năm</a></h6>
-                    <div class="meta"><i class="far fa-clock"></i> 12 giờ trước | 2.1K xem</div>
-                </div>
+                <% 
+                    }
+                }
+                %>
             </div>
         </div>
     </div>
