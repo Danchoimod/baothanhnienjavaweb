@@ -265,4 +265,43 @@ public class NewsServices {
 		}
 		return newsList;
 	}
+
+	// Lấy tin tức đang hoạt động theo danh mục
+	public List<NewsEntity> getActiveNewsByCategory(int categoryId) {
+		List<NewsEntity> newsList = new ArrayList<>();
+		String sql = "SELECT n.*, c.name as categoryName, u.fullname as authorName " +
+					 "FROM News n " +
+					 "INNER JOIN Category c ON n.categoryId = c.id " +
+					 "INNER JOIN Users u ON n.userId = u.id " +
+					 "WHERE n.isActive = 1 AND n.categoryId = ? " +
+					 "ORDER BY n.createDate DESC";
+
+		try (Connection con = DatabaseConnect.dbConnection();
+			 PreparedStatement ps = con.prepareStatement(sql)) {
+
+			ps.setInt(1, categoryId);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				NewsEntity news = new NewsEntity();
+				news.setId(rs.getInt("id"));
+				news.setTitle(rs.getString("title"));
+				news.setContent(rs.getString("content"));
+				news.setSummary(rs.getString("summary"));
+				news.setImage(rs.getString("image"));
+				news.setCreateDate(rs.getDate("createDate"));
+				news.setUpdateDate(rs.getDate("updateDate"));
+				news.setUserId(rs.getInt("userId"));
+				news.setAuthorName(rs.getString("authorName"));
+				news.setCategoryId(rs.getInt("categoryId"));
+				news.setCategoryName(rs.getString("categoryName"));
+				news.setViewCount(rs.getInt("viewCount"));
+				news.setActive(rs.getBoolean("isActive"));
+				newsList.add(news);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return newsList;
+	}
 }

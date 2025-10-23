@@ -1,11 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.poly.entities.NewsEntity" %>
+<%@ page import="com.poly.entities.Category" %>
 <%@taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jstl/fmt_rt" prefix="fmt" %>
 <%
     NewsEntity featuredNews = (NewsEntity) request.getAttribute("featuredNews");
     List<NewsEntity> allNews = (List<NewsEntity>) request.getAttribute("allNews");
+    List<Category> categories = (List<Category>) request.getAttribute("categories");
+    Integer selectedCategoryId = (Integer) request.getAttribute("selectedCategoryId");
+    String ctx = request.getContextPath();
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -286,14 +290,19 @@
     <div class="bg-white border-bottom">
         <div class="container">
             <div class="news-category-nav">
-                <a href="#" class="active"> Chính trị</a>
-                <a href="#">Thời sự</a>
-                <a href="#">Thế giới</a>
-                <a href="#">Kinh tế</a>
-                <a href="#">Đối sống</a>
-                <a href="#">Sức khỏe</a>
-                <a href="#">Giới trẻ</a>
-
+                <a href="<%= ctx %>/home" class="<%= (selectedCategoryId == null ? "active" : "") %>">Tất cả</a>
+                <%
+                    if (categories != null) {
+                        for (Category cat : categories) {
+                            boolean isActive = (selectedCategoryId != null && selectedCategoryId == cat.getId());
+                %>
+                    <a href="<%= ctx %>/home?categoryId=<%= cat.getId() %>" class="<%= isActive ? "active" : "" %>">
+                        <%= cat.getName() %>
+                    </a>
+                <%
+                        }
+                    }
+                %>
             </div>
         </div>
     </div>

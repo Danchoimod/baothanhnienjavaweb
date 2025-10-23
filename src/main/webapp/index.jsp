@@ -1,134 +1,183 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.poly.entities.Users" %>
 <!DOCTYPE html>
 <html lang="vi">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
 <head>
     <meta charset="UTF-8" />
-    <title>Trang chủ Java3Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chào mừng - Báo Thanh Niên</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #007bff;
+            --dark: #0f172a;
+        }
+        html, body {
+            height: 100%;
+        }
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #e3f2ff 0%, #ffffff 60%);
+            color: #334155;
         }
-        .navbar-brand {
-            font-size: 24px;
-            letter-spacing: 1px;
+        .navbar {
+            background: var(--primary);
         }
-        .bg-primary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+        .navbar .navbar-brand {
+            color: #fff !important;
+            font-weight: 800;
+            letter-spacing: .5px;
         }
-        .card {
+        .hero {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            align-items: center;
+        }
+        .hero-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+            overflow: hidden;
+        }
+        .hero-left {
+            padding: 48px 40px;
+        }
+        .hero-title {
+            font-size: 42px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin: 16px 0 28px;
+        }
+        .cta .btn {
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-go {
+            background: var(--primary);
             border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .btn-go:hover { background: #0056b3; }
+        .btn-outline { border: 2px solid #e2e8f0; color: #0f172a; }
+        .btn-outline:hover { background: #f8fafc; }
+        .hero-right {
+            background: linear-gradient(135deg, rgba(0,123,255,.1), rgba(0,123,255,.05));
+            padding: 0;
         }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+        .hero-art {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
         }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
+        .hero-art img {
+            width: 100%;
+            max-width: 520px;
+            filter: drop-shadow(0 20px 30px rgba(2,6,23,.1));
         }
-        .nav-link {
-            margin-right: 10px;
-            transition: color 0.3s ease;
+        .quick-links {
+            margin-top: 28px;
+            color: #94a3b8;
+            font-size: 14px;
         }
-        .nav-link:hover {
-            color: #0ea5e9 !important;
+        .quick-links a { color: #64748b; text-decoration: none; }
+        .quick-links a:hover { color: var(--primary); }
+        @media (max-width: 991px) {
+            .hero-title { font-size: 32px; }
+            .hero-right { display: none; }
+            .hero-left { padding: 32px 24px; }
         }
     </style>
+    <%
+        Users user = (Users) session.getAttribute("user");
+        String ctx = request.getContextPath();
+        String role = null;
+        if (user != null) role = user.getRole();
+    %>
+    
 </head>
 <body>
-<!-- Header Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
-        <!-- Brand/Logo -->
-        <a class="navbar-brand font-weight-bold" href="index.jsp">
-            <i class="fas fa-shopping-cart"></i> Java3Demo
-        </a>
-        
-        <!-- Hamburger Menu -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <!-- Navigation Menu -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="index.jsp">Trang chủ</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="products/add">Sản phẩm</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">Về chúng tôi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Liên hệ</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn btn-primary text-white ml-2" href="#login">Đăng nhập</a>
-                </li>
-            </ul>
+    <!-- Top Nav -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="<%= ctx %>/home">
+                <i class="fas fa-newspaper"></i> THANH NIÊN
+            </a>
+            <div class="ml-auto">
+                <% if (user != null) { %>
+                    <a class="btn btn-light btn-sm" href="<%= ctx %>/home">
+                        <i class="fas fa-home"></i> Trang chủ
+                    </a>
+                <% } else { %>
+                    <a class="btn btn-light btn-sm" href="<%= ctx %>/login">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </a>
+                <% } %>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- Hero Section / Banner -->
-<div class="bg-primary text-white py-5">
-    <div class="container">
-        <h1 class="display-4 font-weight-bold">Chào mừng đến với Java3Demo</h1>
-        <p class="lead">Quản lý sản phẩm dễ dàng và hiệu quả</p>
-        <a href="products/add" class="btn btn-light btn-lg mt-3">
-            <i class="fas fa-plus"></i> Thêm sản phẩm mới
-        </a>
-    </div>
-</div>
-
-<!-- Main Content -->
-<div class="container my-5">
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Tính năng chính</h2>
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">📦 Quản lý sản phẩm</h5>
-                            <p class="card-text">Thêm, sửa, xóa sản phẩm một cách dễ dàng</p>
-                        </div>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="row hero-card">
+                <div class="col-lg-7 hero-left">
+                    <span class="badge badge-primary mb-3">
+                        <i class="fas fa-bolt"></i> Chào mừng bạn
+                    </span>
+                    <h1 class="hero-title">Báo Thanh Niên - Cập nhật nhanh, chính xác và đáng tin cậy</h1>
+                    <p class="hero-subtitle">Khám phá những tin tức mới nhất về thời sự, kinh tế, công nghệ, thể thao và nhiều hơn nữa.
+                    </p>
+                    <div class="cta d-flex flex-wrap align-items-center gap-2">
+                        <a href="<%= ctx %>/home" class="btn btn-go text-white mr-2">
+                            <i class="fas fa-arrow-right"></i> Vào trang chủ
+                        </a>
+                        <% if (user == null) { %>
+                        <a href="<%= ctx %>/login" class="btn btn-outline">
+                            <i class="fas fa-user"></i> Đăng nhập
+                        </a>
+                        <% } else { %>
+                            <% if ("EDITOR".equals(role) || "ADMIN".equals(role)) { %>
+                            <a href="<%= ctx %>/news/list" class="btn btn-outline">
+                                <i class="fas fa-newspaper"></i> Quản lý tin tức
+                            </a>
+                            <% } else { %>
+                            <a href="<%= ctx %>/profile" class="btn btn-outline">
+                                <i class="fas fa-user"></i> Trang cá nhân
+                            </a>
+                            <% } %>
+                        <% } %>
+                    </div>
+                    <div class="quick-links">
+                        <i class="fas fa-link"></i> Liên kết nhanh:
+                        <a class="ml-2" href="<%= ctx %>/home">Trang chủ</a> ·
+                        <a href="<%= ctx %>/profile">Tài khoản</a> ·
+                        <a href="<%= ctx %>/news/list">Tin của bạn</a>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">⚙️ Quản lý danh mục</h5>
-                            <p class="card-text">Tổ chức sản phẩm theo các danh mục khác nhau</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">📊 Thống kê</h5>
-                            <p class="card-text">Xem thống kê chi tiết về sản phẩm</p>
-                        </div>
+                <div class="col-lg-5 hero-right">
+                    <div class="hero-art">
+                        <img src="https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?q=80&w=1200&auto=format&fit=crop" alt="News Illustration">
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </section>
+
+    <footer class="text-center text-muted py-4">
+        <div class="container">
+            <small>&copy; <%= new java.util.GregorianCalendar().get(java.util.Calendar.YEAR) %> Báo Thanh Niên. All rights reserved.</small>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

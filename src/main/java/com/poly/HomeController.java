@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.poly.entities.NewsEntity;
+import com.poly.entities.Category;
 import com.poly.services.NewsServices;
 
 
@@ -21,8 +22,27 @@ public class HomeController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		// Lấy danh sách tất cả tin tức đã được phê duyệt (isActive = 1)
-		List<NewsEntity> allNews = newsServices.getAllActiveNews();
+		// Lấy danh sách danh mục để hiển thị bộ lọc
+		List<Category> categories = newsServices.getAllCategories();
+		req.setAttribute("categories", categories);
+
+		// Lọc theo danh mục nếu có tham số categoryId
+		String categoryIdParam = req.getParameter("categoryId");
+		Integer selectedCategoryId = null;
+		List<NewsEntity> allNews;
+		if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
+			try {
+				selectedCategoryId = Integer.parseInt(categoryIdParam);
+				allNews = newsServices.getActiveNewsByCategory(selectedCategoryId);
+			} catch (NumberFormatException e) {
+				// Nếu tham số không hợp lệ, vẫn hiển thị tất cả
+				allNews = newsServices.getAllActiveNews();
+				selectedCategoryId = null;
+			}
+		} else {
+			allNews = newsServices.getAllActiveNews();
+		}
+		req.setAttribute("selectedCategoryId", selectedCategoryId);
 		
 		// Tin nổi bật (tin mới nhất)
 		NewsEntity featuredNews = null;
