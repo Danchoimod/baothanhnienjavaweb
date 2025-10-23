@@ -213,6 +213,13 @@
                     <div class="profile-email"><%= session.getAttribute("username") %></div>
                     
                     <ul class="profile-menu">
+                        <% if ("ADMIN".equals((String) session.getAttribute("role"))) { %>
+                        <li>
+                            <a href="<%= request.getContextPath() %>/dashboard">
+                                <i class="fas fa-user-shield"></i> Quản trị viên
+                            </a>
+                        </li>
+                        <% } %>
                         <li>
                             <a href="#" class="active" data-tab="profile">
                                 <i class="fas fa-user"></i> Thông tin tài khoản
@@ -329,15 +336,17 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Ngày sinh</label>
-                                            <input type="date" class="form-control" name="birthDate">
+                          <input type="date" class="form-control" name="birthDate"
+                              value="<%= request.getAttribute("profile") != null ? ((com.poly.beans.ProfileBean)request.getAttribute("profile")).getBirthDate() : (((com.poly.entities.Users)session.getAttribute("user")).getBirthDate() != null ? ((com.poly.entities.Users)session.getAttribute("user")).getBirthDate().toString() : "") %>">
                                         </div>
                                     </div>
                                     
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Địa chỉ</label>
-                                            <input type="text" class="form-control" name="address" 
-                                                   placeholder="Nhập địa chỉ">
+                          <input type="text" class="form-control" name="address" 
+                              placeholder="Nhập địa chỉ"
+                              value="<%= request.getAttribute("profile") != null ? ((com.poly.beans.ProfileBean)request.getAttribute("profile")).getAddress() : ((com.poly.entities.Users)session.getAttribute("user")).getAddress() %>">
                                         </div>
                                     </div>
                                 </div>

@@ -380,6 +380,9 @@
                         <a href="<%= request.getContextPath() %>/news/list">
                             <i class="fas fa-newspaper"></i> Quản lý tin tức
                         </a>
+                        <a href="<%= request.getContextPath() %>/dashboard">
+                            <i class="fas fa-user-shield"></i> Quản lý viên
+                        </a>
                         <% } %>
                         <a href="<%= request.getContextPath() %>/logout">
                             <i class="fas fa-sign-out-alt"></i> Đăng xuất
@@ -487,33 +490,7 @@
 
             <!-- Sidebar -->
             <div class="col-lg-4">
-                <div class="sidebar">
-                    <!-- Most Viewed -->
-                    <% if (relatedNews != null && !relatedNews.isEmpty()) { %>
-                    <div class="sidebar-section">
-                        <h4><i class="fas fa-fire"></i> Tin xem nhiều</h4>
-                        <% for (int i = 0; i < Math.min(relatedNews.size(), 5); i++) {
-                            NewsEntity popular = relatedNews.get(i);
-                        %>
-                        <div class="sidebar-news-item">
-                            <h6>
-                                <a href="<%= request.getContextPath() %>/news/detail?id=<%= popular.getId() %>">
-                                    <%= popular.getTitle() %>
-                                </a>
-                            </h6>
-                            <div class="meta">
-                                <i class="fas fa-eye"></i> <%= popular.getViewCount() %> lượt xem
-                            </div>
-                        </div>
-                        <% } %>
-                    </div>
-                    <% } %>
-
-                    <!-- Advertisement -->
-                    <div class="sidebar-section">
-                        <img src="https://via.placeholder.com/350x250?text=Quảng+cáo" class="img-fluid w-100" style="border-radius: 5px;">
-                    </div>
-                </div>
+                <%@ include file="/WEB-INF/views/includes/sidebar.jspf" %>
             </div>
         </div>
     </div>

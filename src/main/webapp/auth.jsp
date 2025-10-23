@@ -370,6 +370,33 @@
                                        value="<%= request.getAttribute("registerData") != null ? ((com.poly.beans.RegisterBean)request.getAttribute("registerData")).getPhone() : "" %>">
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label>Ngày sinh</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar"></i>
+                                    </span>
+                                </div>
+                                <input type="date" class="form-control" name="birthDate"
+                                       value="<%= request.getAttribute("registerData") != null ? ((com.poly.beans.RegisterBean)request.getAttribute("registerData")).getBirthDate() : "" %>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Địa chỉ</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" name="address" 
+                                       placeholder="Nhập địa chỉ"
+                                       value="<%= request.getAttribute("registerData") != null ? ((com.poly.beans.RegisterBean)request.getAttribute("registerData")).getAddress() : "" %>">
+                            </div>
+                        </div>
                         
                         <div class="form-group">
                             <label>Mật khẩu <span class="text-danger">*</span></label>

@@ -241,7 +241,8 @@ public class NewsController extends HttpServlet {
 		String newsIdParam = req.getParameter("id");
 		if (newsIdParam != null && !newsIdParam.isEmpty()) {
 			int newsId = Integer.parseInt(newsIdParam);
-			newsServices.deleteNews(newsId);
+			// Xóa vĩnh viễn bài viết
+			newsServices.deleteNewsHard(newsId);
 		}
 		resp.sendRedirect(req.getContextPath() + "/news/list?success=delete");
 	}
@@ -269,9 +270,13 @@ public class NewsController extends HttpServlet {
 			
 			// Lấy tin liên quan
 			List<NewsEntity> relatedNews = newsServices.getRelatedNews(newsId, news.getCategoryId(), 5);
+
+			// Lấy top xem nhiều cho sidebar (tái sử dụng include)
+			List<NewsEntity> popularNews = newsServices.getMostViewed(5);
 			
 			req.setAttribute("news", news);
 			req.setAttribute("relatedNews", relatedNews);
+			req.setAttribute("popularNews", popularNews);
 			req.getRequestDispatcher("/news-detail.jsp").forward(req, resp);
 		} catch (NumberFormatException e) {
 			resp.sendRedirect(req.getContextPath() + "/home");

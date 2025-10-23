@@ -37,6 +37,10 @@ public class ProfileController extends HttpServlet {
 		profileBean.setFullname(user.getFullname());
 		profileBean.setEmail(user.getEmail());
 		profileBean.setPhone(user.getPhone());
+		profileBean.setAddress(user.getAddress());
+		if (user.getBirthDate() != null) {
+			profileBean.setBirthDate(user.getBirthDate().toString());
+		}
 		
 		req.setAttribute("profile", profileBean);
 		req.getRequestDispatcher("/profile.jsp").forward(req, resp);
@@ -116,6 +120,16 @@ public class ProfileController extends HttpServlet {
 		currentUser.setFullname(fullname);
 		currentUser.setEmail(email);
 		currentUser.setPhone(phone);
+		currentUser.setAddress(address);
+		try {
+			if (birthDate != null && !birthDate.trim().isEmpty()) {
+				currentUser.setBirthDate(java.sql.Date.valueOf(birthDate));
+			} else {
+				currentUser.setBirthDate(null);
+			}
+		} catch (IllegalArgumentException ie) {
+			// ignore invalid date format
+		}
 		
 		boolean success = usersServices.updateUserProfile(currentUser);
 		

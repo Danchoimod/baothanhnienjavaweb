@@ -7,18 +7,22 @@ public class RegisterBean {
 	private String email;
 	private String fullname;
 	private String phone;
+	private String address;
+	private String birthDate; // yyyy-MM-dd (optional)
 	
 	// Constructors
 	public RegisterBean() {
 	}
 	
-	public RegisterBean(String username, String password, String confirmPassword, String email, String fullname, String phone) {
+	public RegisterBean(String username, String password, String confirmPassword, String email, String fullname, String phone, String address, String birthDate) {
 		this.username = username;
 		this.password = password;
 		this.confirmPassword = confirmPassword;
 		this.email = email;
 		this.fullname = fullname;
 		this.phone = phone;
+		this.address = address;
+		this.birthDate = birthDate;
 	}
 	
 	// Getters and Setters
@@ -68,6 +72,22 @@ public class RegisterBean {
 	
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+    
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(String birthDate) {
+		this.birthDate = birthDate;
 	}
 	
 	// Validation methods

@@ -9,6 +9,8 @@ public class Users {
 	private String email;
 	private String fullname;
 	private String phone;
+	private String address;
+	private Date birthDate;
 	private Date createDate;
 	private boolean isActive;
 	private String role; // USER, ADMIN
@@ -17,13 +19,15 @@ public class Users {
 	public Users() {
 	}
 	
-	public Users(int id, String username, String password, String email, String fullname, String phone, Date createDate, boolean isActive, String role) {
+	public Users(int id, String username, String password, String email, String fullname, String phone, String address, Date birthDate, Date createDate, boolean isActive, String role) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.fullname = fullname;
 		this.phone = phone;
+		this.address = address;
+		this.birthDate = birthDate;
 		this.createDate = createDate;
 		this.isActive = isActive;
 		this.role = role;
@@ -76,6 +80,22 @@ public class Users {
 	
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Date getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
 	}
 	
 	public Date getCreateDate() {

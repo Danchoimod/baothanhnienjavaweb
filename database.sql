@@ -21,6 +21,8 @@ CREATE TABLE Users (
     email NVARCHAR(100) UNIQUE NOT NULL,
     fullname NVARCHAR(100) NOT NULL,
     phone NVARCHAR(20),
+    address NVARCHAR(255) NULL,
+    birthDate DATE NULL,
     createDate DATE DEFAULT GETDATE(),
     isActive BIT DEFAULT 1,
     role NVARCHAR(20) DEFAULT 'USER'

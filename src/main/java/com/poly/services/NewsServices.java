@@ -34,6 +34,84 @@ public class NewsServices {
 		}
 		return categories;
 	}
+
+	// ADMIN: Lấy tất cả danh mục (bao gồm inactive)
+	public List<Category> getAllCategoriesAdmin() {
+		List<Category> categories = new ArrayList<>();
+		String sql = "SELECT * FROM Category ORDER BY isActive DESC, name";
+		try (Connection con = DatabaseConnect.dbConnection();
+			 PreparedStatement ps = con.prepareStatement(sql);
+			 ResultSet rs = ps.executeQuery()) {
+			while (rs.next()) {
+				Category category = new Category();
+				category.setId(rs.getInt("id"));
+				category.setName(rs.getString("name"));
+				category.setDescription(rs.getString("description"));
+				category.setActive(rs.getBoolean("isActive"));
+				categories.add(category);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return categories;
+	}
+
+	// ADMIN: Tạo danh mục
+	public boolean createCategory(Category category) {
+		String sql = "INSERT INTO Category (name, description, isActive) VALUES (?, ?, 1)";
+		try (Connection con = DatabaseConnect.dbConnection();
+		     PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, category.getName());
+			ps.setString(2, category.getDescription());
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// ADMIN: Cập nhật danh mục
+	public boolean updateCategory(Category category) {
+		String sql = "UPDATE Category SET name = ?, description = ?, isActive = ? WHERE id = ?";
+		try (Connection con = DatabaseConnect.dbConnection();
+		     PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, category.getName());
+			ps.setString(2, category.getDescription());
+			ps.setBoolean(3, category.isActive());
+			ps.setInt(4, category.getId());
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// ADMIN: Xóa (vô hiệu hóa) danh mục
+	public boolean deleteCategory(int categoryId) {
+		String sql = "UPDATE Category SET isActive = 0 WHERE id = ?";
+		try (Connection con = DatabaseConnect.dbConnection();
+		     PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, categoryId);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// ADMIN: Xóa vĩnh viễn danh mục (hard delete)
+	public boolean deleteCategoryHard(int categoryId) {
+		String sql = "DELETE FROM Category WHERE id = ?";
+		try (Connection con = DatabaseConnect.dbConnection();
+		     PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, categoryId);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			// Có thể thất bại do ràng buộc khóa ngoại với News
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
 	// Tạo tin tức mới
 	public boolean createNews(NewsEntity news) {
@@ -172,6 +250,19 @@ public class NewsServices {
 		}
 		return false;
 	}
+
+	// Xóa tin tức (hard delete)
+	public boolean deleteNewsHard(int newsId) {
+		String sql = "DELETE FROM News WHERE id = ?";
+		try (Connection con = DatabaseConnect.dbConnection();
+		     PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, newsId);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
 	// Lấy tất cả tin tức đang hoạt động (cho trang chủ)
 	public List<NewsEntity> getAllActiveNews() {
@@ -281,6 +372,79 @@ public class NewsServices {
 
 			ps.setInt(1, categoryId);
 			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				NewsEntity news = new NewsEntity();
+				news.setId(rs.getInt("id"));
+				news.setTitle(rs.getString("title"));
+				news.setContent(rs.getString("content"));
+				news.setSummary(rs.getString("summary"));
+				news.setImage(rs.getString("image"));
+				news.setCreateDate(rs.getDate("createDate"));
+				news.setUpdateDate(rs.getDate("updateDate"));
+				news.setUserId(rs.getInt("userId"));
+				news.setAuthorName(rs.getString("authorName"));
+				news.setCategoryId(rs.getInt("categoryId"));
+				news.setCategoryName(rs.getString("categoryName"));
+				news.setViewCount(rs.getInt("viewCount"));
+				news.setActive(rs.getBoolean("isActive"));
+				newsList.add(news);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return newsList;
+	}
+
+	// Lấy tất cả tin tức (ADMIN - cả active và inactive)
+	public List<NewsEntity> getAllNews() {
+		List<NewsEntity> newsList = new ArrayList<>();
+		String sql = "SELECT n.*, c.name as categoryName, u.fullname as authorName " +
+				 "FROM News n " +
+				 "INNER JOIN Category c ON n.categoryId = c.id " +
+				 "INNER JOIN Users u ON n.userId = u.id " +
+				 "ORDER BY n.createDate DESC";
+
+		try (Connection con = DatabaseConnect.dbConnection();
+			 PreparedStatement ps = con.prepareStatement(sql);
+			 ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				NewsEntity news = new NewsEntity();
+				news.setId(rs.getInt("id"));
+				news.setTitle(rs.getString("title"));
+				news.setContent(rs.getString("content"));
+				news.setSummary(rs.getString("summary"));
+				news.setImage(rs.getString("image"));
+				news.setCreateDate(rs.getDate("createDate"));
+				news.setUpdateDate(rs.getDate("updateDate"));
+				news.setUserId(rs.getInt("userId"));
+				news.setAuthorName(rs.getString("authorName"));
+				news.setCategoryId(rs.getInt("categoryId"));
+				news.setCategoryName(rs.getString("categoryName"));
+				news.setViewCount(rs.getInt("viewCount"));
+				news.setActive(rs.getBoolean("isActive"));
+				newsList.add(news);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return newsList;
+	}
+
+	// Lấy top tin xem nhiều
+	public List<NewsEntity> getMostViewed(int limit) {
+		List<NewsEntity> newsList = new ArrayList<>();
+		String sql = "SELECT TOP " + limit + " n.*, c.name as categoryName, u.fullname as authorName " +
+				 "FROM News n " +
+				 "INNER JOIN Category c ON n.categoryId = c.id " +
+				 "INNER JOIN Users u ON n.userId = u.id " +
+				 "WHERE n.isActive = 1 " +
+				 "ORDER BY n.viewCount DESC, n.createDate DESC";
+
+		try (Connection con = DatabaseConnect.dbConnection();
+			 PreparedStatement ps = con.prepareStatement(sql);
+			 ResultSet rs = ps.executeQuery()) {
 
 			while (rs.next()) {
 				NewsEntity news = new NewsEntity();

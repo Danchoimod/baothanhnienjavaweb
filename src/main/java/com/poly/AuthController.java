@@ -61,6 +61,15 @@ public class AuthController extends HttpServlet {
 			return;
 		}
 		
+		// Nếu tài khoản tồn tại nhưng đã bị khóa -> thông báo riêng
+		Users existed = usersServices.getUserByUsername(username);
+		if (existed != null && !existed.isActive()) {
+			req.setAttribute("loginError", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên.");
+			req.setAttribute("activeTab", "login");
+			req.getRequestDispatcher("/auth.jsp").forward(req, resp);
+			return;
+		}
+
 		// Kiểm tra đăng nhập
 		Users user = usersServices.login(username, password);
 		if (user != null) {
@@ -88,8 +97,10 @@ public class AuthController extends HttpServlet {
 		String email = req.getParameter("email");
 		String fullname = req.getParameter("fullname");
 		String phone = req.getParameter("phone");
+		String address = req.getParameter("address");
+		String birthDate = req.getParameter("birthDate");
 		
-		RegisterBean registerBean = new RegisterBean(username, password, confirmPassword, email, fullname, phone);
+		RegisterBean registerBean = new RegisterBean(username, password, confirmPassword, email, fullname, phone, address, birthDate);
 		
 		// Validate form
 		if (!registerBean.isValid()) {
@@ -125,6 +136,14 @@ public class AuthController extends HttpServlet {
 		newUser.setEmail(email);
 		newUser.setFullname(fullname);
 		newUser.setPhone(phone);
+		newUser.setAddress(address);
+		try {
+			if (birthDate != null && !birthDate.trim().isEmpty()) {
+				newUser.setBirthDate(java.sql.Date.valueOf(birthDate));
+			}
+		} catch (IllegalArgumentException ie) {
+			// ignore invalid date format
+		}
 		
 		// Đăng ký
 		boolean success = usersServices.register(newUser);
